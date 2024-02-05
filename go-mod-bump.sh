@@ -16,7 +16,12 @@
 set -e
 
 function echoerr() {
-    echo "$@" >&2
+    if [ ! -t 0 ]; then
+        cat <&0 >&2
+    fi
+    if [ -n "$1" ]; then
+        echo "$@" >&2
+    fi
 }
 
 if [ -z "$1" ]; then
