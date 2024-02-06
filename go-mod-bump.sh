@@ -26,9 +26,8 @@ function echoerr() {
 
 if [ -z "$1" ]; then
     echoerr <<EOF
-go-mod-bump: nothing to do, set argument 'all', 'go' or module name(s), for example:
+go-mod-bump: nothing to do, set argument 'all' or module name(s), for example:
     go-mod-bump all
-    go-mod-bump go
     go-mod-bump github.com/xorcare/pointer
     go-mod-bump github.com/xorcare/pointer github.com/xorcare/tornado
 EOF
