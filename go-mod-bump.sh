@@ -39,14 +39,15 @@ GO_LIST_FORMAT_DIRECT='{{.Path}}{{if .Indirect}}<SKIP>{{end}}'
 readonly GO_LIST_FORMAT_DIRECT
 
 # shellcheck disable=SC2068
-DIRECT_MODULES=$(go list -f "$GO_LIST_FORMAT_DIRECT" -m $@ | grep -v '<SKIP>')
+DIRECT_MODULES=$(go list -m -f "$GO_LIST_FORMAT_DIRECT" $@ | grep -v '<SKIP>')
 readonly DIRECT_MODULES
 
-GO_LIST_FORMAT_FOR_UPDATE='{{.Path}}@{{.Version}}@{{if .Update}}{{.Update.Version}}{{else}}<SKIP>{{end}}{{if .Indirect}}<SKIP>{{end}}'
+GO_LIST_FORMAT_FOR_UPDATE='{{.Path}}@{{.Version}}@{{if .Update}}{{.Update.Version}}{{end}}'
+GO_LIST_FORMAT_FOR_UPDATE+='{{if not .Update}}<SKIP>{{end}}' # skip modules without updates.
 readonly GO_LIST_FORMAT_FOR_UPDATE
 
 # shellcheck disable=SC2086
-MODULES_FOR_UPDATE=$(go list -f "$GO_LIST_FORMAT_FOR_UPDATE" -m -u $DIRECT_MODULES | grep -v '<SKIP>')
+MODULES_FOR_UPDATE=$(go list -m -u -f "$GO_LIST_FORMAT_FOR_UPDATE" $DIRECT_MODULES | grep -v '<SKIP>')
 readonly MODULES_FOR_UPDATE
 
 function update_module() {
