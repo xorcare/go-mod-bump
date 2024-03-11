@@ -6,14 +6,72 @@
 #
 # See https://github.com/xorcare/go-mod-bump/blob/main/LICENSE
 
-# Script to elegantly update direct Go modules in separate commits.
-#
-# Automatically updates dependencies similar to `go get -u`, but commits the update to each direct
-# module in a separate commit.
-#
-# Source https://github.com/xorcare/go-mod-bump
-
 set -e
+
+#!/bin/bash
+
+ARGS=''
+PREFIX=''
+
+function help() {
+    cat <<EOF
+usage: go-mod-bump PARAM [-p|-message-prefix OPTION] [-h|--help] [modules]
+
+Script to elegantly update direct Go modules in separate commits.
+
+Automatically updates dependencies similar to 'go get -u', but
+commits the update to each direct module in a separate commit.
+
+Source https://github.com/xorcare/go-mod-bump
+
+EXAMPLES
+
+For update all direct models, use:
+
+    go-mod-bump all
+
+For update one specific direct module, specify its name. For example:
+
+    go-mod-bump github.com/xorcare/pointer
+
+For update multiple direct modules, specify their names. For example:
+
+    go-mod-bump github.com/xorcare/pointer github.com/xorcare/tornado
+
+OPTIONS
+    -p <prefix>, -message-prefix=<prefix>
+        Add custom prefix to git commit message.
+
+    -h|--help
+        Show this message.
+EOF
+}
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+    -h | -help)
+        help
+        exit 0
+        ;;
+    -p | -message-prefix)
+        PREFIX="$2"
+        shift
+        ;;
+    --* | -*)
+        echo "Illegal option $1"
+        echo "For print help use flag -help"
+        exit 1
+        ;;
+    *)
+        ARGS="$ARGS $1"
+        ;;
+    esac
+    shift
+done
+
+readonly PREFIX ARGS
+
+eval set -- "$ARGS"
 
 function echoerr() {
     if [ ! -t 0 ]; then
@@ -26,10 +84,8 @@ function echoerr() {
 
 if [ -z "$1" ]; then
     echoerr <<EOF
-go-mod-bump: nothing to do, set argument 'all' or module name(s), for example:
-    go-mod-bump all
-    go-mod-bump github.com/xorcare/pointer
-    go-mod-bump github.com/xorcare/pointer github.com/xorcare/tornado
+go-mod-bump: nothing to do, set argument 'all' or module name(s).
+    Also, you can use flag -help for get more examples of usage.
 EOF
     exit 0
 fi
@@ -73,7 +129,7 @@ function bump_module() {
 
     git reset HEAD -- . >/dev/null
     git add go.mod go.sum >/dev/null
-    git cm -a -m "Bump ${module} from ${current_version} to ${latest_version}" >/dev/null
+    git cm -a -m "${PREFIX}Bump ${module} from ${current_version} to ${latest_version}" >/dev/null
 
     echoerr "go-mod-bump: upgraded ${module} ${current_version} => [${latest_version}]"
 }

@@ -44,6 +44,21 @@ For update multiple direct modules, specify their names. For example:
 go-mod-bump github.com/xorcare/pointer github.com/xorcare/tornado
 ```
 
+Also, you can add custom prefix for git message. For example:
+
+```shell
+go-mod-bump -p 'build(deps): ' all
+```
+
+<details>
+    <summary>Git log with message prefix example</summary>
+
+    build(deps): Bump github.com/xorcare/pointer from v1.0.0 to v1.1.1
+    build(deps): Bump github.com/xorcare/tornado from v0.1.0 to v0.1.1
+    build(deps): Bump github.com/xorcare/golden from v0.6.0 to v0.8.2
+
+</details>
+
 ## Know issues and limitations
 
 - The script does not know how to work with `replace` directive, if it is used in your project be
