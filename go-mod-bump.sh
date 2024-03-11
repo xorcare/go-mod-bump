@@ -8,8 +8,6 @@
 
 set -e
 
-#!/bin/bash
-
 ARGS=''
 PREFIX=''
 
