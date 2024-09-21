@@ -13,7 +13,7 @@ PREFIX=''
 
 function help() {
     cat <<EOF
-usage: go-mod-bump PARAM [-p|-message-prefix OPTION] [-h|--help] [modules]
+usage: go-mod-bump PARAM [-p|-message-prefix OPTION] [-h|-help] [modules]
 
 Script to elegantly update direct Go modules in separate commits.
 
@@ -40,7 +40,7 @@ OPTIONS
     -p <prefix>, -message-prefix=<prefix>
         Add custom prefix to git commit message.
 
-    -h|--help
+    -h|-help
         Show this message.
 EOF
 }
