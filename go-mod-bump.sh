@@ -127,7 +127,7 @@ function bump_module() {
 
     git reset HEAD -- . >/dev/null
     git add go.mod go.sum >/dev/null
-    git cm -a -m "${PREFIX}Bump ${module} from ${current_version} to ${latest_version}" >/dev/null
+    git commit -a -m "${PREFIX}Bump ${module} from ${current_version} to ${latest_version}" >/dev/null
 
     echoerr "go-mod-bump: upgraded ${module} ${current_version} => [${latest_version}]"
 }
