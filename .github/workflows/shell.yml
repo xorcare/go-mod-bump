@@ -8,12 +8,69 @@ on:
   workflow_dispatch:
 
 jobs:
-  check-shell-scripts:
-    name: Check
+  lint-shell-scripts:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Run shfmt and shellcheck
-        uses: luizm/action-sh-checker@v0.8.0
-        env:
-          SHFMT_OPTS: -d -s -w -i 4 -ln bash
+    - uses: actions/checkout@v4
+    - name: Run shfmt and shellcheck
+      uses: luizm/action-sh-checker@v0.8.0
+      env:
+        SHFMT_OPTS: -d -s -w -i 4 -ln bash
+
+  check-script-logic:
+    name: Check pkg:${{ matrix.pkg }} os:${{ matrix.os }}
+    runs-on: '${{ matrix.os }}'
+    strategy:
+      matrix:
+        os:
+        - ubuntu-latest
+        - macos-latest
+        pkg:
+        - all
+        - go
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23.1'
+        cache: false
+
+    - name: Configure test repository
+      run: |
+        git clone https://github.com/xorcare/tornado
+        cd tornado
+        git config user.email "you@example.com"
+        git config user.name "Your Name"
+
+    - name: Setup git user
+      working-directory: tornado
+      run: |
+        git config user.email "you@example.com"
+        git config user.name "Your Name"
+
+    - name: Test help flags
+      working-directory: tornado
+      run: |
+        ../go-mod-bump.sh -h
+        ../go-mod-bump.sh -help
+
+    - name: Default exit code must be zero
+      working-directory: tornado
+      run: |
+        ../go-mod-bump.sh
+
+    - name: Test bump '${{ matrix.pkg }}'
+      working-directory: tornado
+      run: |
+        git checkout --quiet 029fe5d254ab71c1e72444adcda808f5a494084d
+        ../go-mod-bump.sh ${{ matrix.pkg }}
+        commit_count=$(git rev-list --count HEAD ^029fe5d254ab71c1e72444adcda808f5a494084d)
+        if [[ "$commit_count" == 0 ]]; then
+          echo "ERROR: No changes have been detected, but they must be exist"
+          exit 1
+        fi
+        git diff 029fe5d254ab71c1e72444adcda808f5a494084d
