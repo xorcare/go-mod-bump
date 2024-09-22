@@ -42,9 +42,6 @@ jobs:
     - name: Configure test repository
       run: |
         git clone https://github.com/xorcare/tornado
-        cd tornado
-        git config user.email "you@example.com"
-        git config user.name "Your Name"
 
     - name: Setup git user
       working-directory: tornado
