@@ -91,17 +91,31 @@ fi
 GO_LIST_FORMAT_DIRECT='{{.Path}}{{if .Indirect}}<SKIP>{{end}}{{if .Main}}<SKIP>{{end}}'
 readonly GO_LIST_FORMAT_DIRECT
 
+echoerr "go-mod-bump: fetching direct modules"
+
 # shellcheck disable=SC2068
-DIRECT_MODULES=$(go list -m -f "$GO_LIST_FORMAT_DIRECT" $@ | grep -v '<SKIP>')
+DIRECT_MODULES=$(go list -m -f "$GO_LIST_FORMAT_DIRECT" $@ | grep -v '<SKIP>' || true)
 readonly DIRECT_MODULES
+
+if [ -z "$DIRECT_MODULES" ]; then
+    echoerr "go-mod-bump: nothing to update (no direct modules found)"
+    exit 0
+fi
 
 GO_LIST_FORMAT_FOR_UPDATE='{{.Path}}@{{.Version}}@{{if .Update}}{{.Update.Version}}{{end}}'
 GO_LIST_FORMAT_FOR_UPDATE+='{{if not .Update}}<SKIP>{{end}}' # skip modules without updates.
 readonly GO_LIST_FORMAT_FOR_UPDATE
 
+echoerr "go-mod-bump: fetching latest versions of modules"
+
 # shellcheck disable=SC2086
-MODULES_FOR_UPDATE=$(go list -m -u -f "$GO_LIST_FORMAT_FOR_UPDATE" $DIRECT_MODULES | grep -v '<SKIP>')
+MODULES_FOR_UPDATE=$(go list -m -u -f "$GO_LIST_FORMAT_FOR_UPDATE" $DIRECT_MODULES | grep -v '<SKIP>' || true)
 readonly MODULES_FOR_UPDATE
+
+if [ -z "$MODULES_FOR_UPDATE" ]; then
+    echoerr "go-mod-bump: nothing to update (no new versions found)"
+    exit 0
+fi
 
 function update_module() {
     go get "$1"

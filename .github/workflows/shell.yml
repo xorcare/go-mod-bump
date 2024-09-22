@@ -49,21 +49,21 @@ jobs:
         git config user.email "you@example.com"
         git config user.name "Your Name"
 
-    - name: Test help flags
+    - name: Zero exit code when use help flags
       working-directory: tornado
       run: |
         ../go-mod-bump.sh -h
         ../go-mod-bump.sh -help
 
-    - name: Default exit code must be zero
+    - name: Zero exit code when module name is not set
       working-directory: tornado
       run: |
         ../go-mod-bump.sh
 
-    - name: Test bump '${{ matrix.pkg }}'
+    - name: Update dependencies when there is something to update
       working-directory: tornado
       run: |
-        git checkout --quiet 029fe5d254ab71c1e72444adcda808f5a494084d
+        git checkout --force --quiet 029fe5d254ab71c1e72444adcda808f5a494084d
         ../go-mod-bump.sh ${{ matrix.pkg }}
         commit_count=$(git rev-list --count HEAD ^029fe5d254ab71c1e72444adcda808f5a494084d)
         if [[ "$commit_count" == 0 ]]; then
@@ -71,3 +71,17 @@ jobs:
           exit 1
         fi
         git diff 029fe5d254ab71c1e72444adcda808f5a494084d
+
+    - name: Zero exit code when nothing to update
+      working-directory: tornado
+      run: |
+        git checkout --force --quiet 029fe5d254ab71c1e72444adcda808f5a494084d
+        ../go-mod-bump.sh ${{ matrix.pkg }}   # update
+        ../go-mod-bump.sh ${{ matrix.pkg }}   # nothing to update
+
+    - name: Zero exit code when no have direct modules
+      run: |
+        mkdir testo
+        cd testo
+        go mod init testo
+        ../go-mod-bump.sh all
