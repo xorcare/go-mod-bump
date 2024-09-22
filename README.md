@@ -9,7 +9,7 @@ module in a separate commit.
 
 ```shell
 mkdir -p ~/bin
-curl https://raw.githubusercontent.com/xorcare/go-mod-bump/main/go-mod-bump.sh > ~/bin/go-mod-bump
+curl https://raw.githubusercontent.com/xorcare/go-mod-bump/main/go-mod-bump.sh --output ~/bin/go-mod-bump
 chmod +x ~/bin/go-mod-bump
 ```
 
