@@ -88,7 +88,7 @@ EOF
     exit 0
 fi
 
-GO_LIST_FORMAT_DIRECT='{{.Path}}{{if .Indirect}}<SKIP>{{end}}'
+GO_LIST_FORMAT_DIRECT='{{.Path}}{{if .Indirect}}<SKIP>{{end}}{{if .Main}}<SKIP>{{end}}'
 readonly GO_LIST_FORMAT_DIRECT
 
 # shellcheck disable=SC2068
