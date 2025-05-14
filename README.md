@@ -59,6 +59,13 @@ go-mod-bump -p 'build(deps): ' all
 
 </details>
 
+## Thank you for your support
+
+If you found this project useful, please support it by giving it a star
+on [GitHub](https://github.com/xorcare/go-mod-bump).
+This will help other users discover the project and will motivate me to continue developing it!
+Thank you for your support!
+
 ## Know issues and limitations
 
 - The script does not know how to work with `replace` directive, if it is used in your project be
